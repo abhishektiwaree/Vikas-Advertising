@@ -98,3 +98,6 @@ function getFooter(): void
     <?php
 }
 ?>
+</body>
+
+</html>

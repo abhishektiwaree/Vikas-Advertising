@@ -10,13 +10,6 @@ page_sidebar();
 <?php 
 
 $allowedExtensions = ['jpg', 'jpeg', 'png'];
-function resize_image($file, $new_width, $new_height) {
-    list($width, $height) = getimagesize($file);
-    $image_p = imagecreatetruecolor($new_width, $new_height);
-    $image = imagecreatefromjpeg($file); // Use imagecreatefrompng() for PNG files
-    imagecopyresampled($image_p, $image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
-    return $image_p;
-}
 
 if(isset($_POST['submit']) && $_POST['submit'] != ''){
 
@@ -89,11 +82,7 @@ if(isset($_POST['submit']) && $_POST['submit'] != ''){
 		
 		if (empty($errors)) {
 			
-			// Resize the image to reduce its size
-			$image = resize_image($fileTmpName, 800, 600); // Adjust dimensions as needed
-			$uploadPath = "gallery/" . $fileName; // Adjust the upload path as needed
-			imagejpeg($image, $uploadPath); // Save resized image as JPEG
-			imagedestroy($image); // Free up memory
+		
 
 			$sql = "INSERT INTO add_photos(remark, img_name) VALUES ('".$_POST['remark']."','$newFileName')";
 
@@ -155,105 +144,112 @@ if (isset($_GET['del']) && $_GET['del']!='') {
 
 ?>
 
-<link rel="stylesheet" type="text/css" href="images/gallery/fancybox.min.css">
 
 <style>
-    /* Add any custom styles here */
-    form div.row:nth-child(odd) {
-        background: #eeeeee;
-        border-radius: 5px;
-        margin-bottom: 5px;
-        margin-top: 5px;
-        padding: 5px;
-    }
-
-    form div.row label {
-        color: #000000;
-    }
+form div.row:nth-child(odd) {
+  background: #eeeeee;
+  border-radius: 5px;
+  margin-bottom:5px;
+  margin-top:5px;
+  padding:5px;
+}
+form div.row label{
+	color:#000000;
+}
 </style>
 
-<div id="container">    
-    <div class="card card-body">    
-        <form action="<?php echo $_SERVER['PHP_SELF']; ?>" class="wufoo leftLabel page1" name="" enctype="multipart/form-data" method="POST" onSubmit="">
-            <?php echo $msg.'</br>' ?>
-            <div class="bg-warning text-white p-2 my-2 w-100 " style="border-radius:5px;">
-                <h3>Add Gallery</h3>
-            </div>
-            <div class="row mx-1">
-                <div class="col-md-4">
-                    Upload Gallery Photos <br> 
-                    <input type="file" class="form-control" name="u_file"  id="u_file" required ?> 
-                    <?php 
-                        if(isset($_GET['edit'])){
-                    ?>
-                    <a href="<?php echo $data['img_name'];?>" data-fancybox="gallery" class="d-block text-right">Uploaded File</a>
-                    <input type="hidden" name="old_file" value="<?php echo $data['img_name'];?>">
-                    <input type="hidden" name="editsno" value="<?php echo $data['sno'];?>">
-                    <?php
-                        }
-                    ?>
-                </div>
-                <div class="col-md-4">
-                    Remark   <br> 
-                    <input type="text" class="form-control" name="remark" id="description" value="<?php echo isset($_GET['edit'])?$data['remark']:'';?>" >
-                </div>
-                <div class="col-md-4">
-                    <input type="submit" class="btn btn-warning mt-2 " name="submit" id="submit" value="Submit">
-                </div>
-            </div>
-        </form>    
-    </div>
-    
-    <div class="card card-body">
-        <table class="table table-striped table-hover table-sm rounded">
-            <tr class="bg-warning text-white">
-                <th>S.No.</th>
-                <th>Remark</th>
-                <th>File </th>
-                <th>View</th>
-                <th>Edit</th>
-                <th>Delete</th>
-            </tr>
-            <?php
-                $serial_no = 1;
-                $sql = 'select * from add_photos order by sno desc';
-                $res = execute_query($sql);
-                if($res){
-                    while($row = mysqli_fetch_assoc($res)){
-            ?>
-            <tr>
-                <td><?php echo $serial_no++; ?></td>
-                <td><?php echo $row['remark']==""?"-------------":$row['remark'] ?></td>
-                <td>
-                    <a class="gallery-link" href="<?php echo $row['img_name']; ?>" data-fancybox="gallery">
-                        <img loading="lazy" src="<?php echo $row['img_name']; ?>" alt="Gallery Image" width="100" height="100">
-                    </a>
-                </td>
-                <td><a href="<?php echo $row['img_name'] ?>" target="_blank">View</a></td>
-                <td>
-                    <a href="<?php echo $_SERVER['PHP_SELF'] . '?edit=' . $row['sno']; ?>" alt="Edit" data-toggle="tooltip" title="Edit">
-                        <span class="far fa-edit" aria-hidden="true"></span>
-                    </a>&nbsp;&nbsp;&nbsp;
-                </td>
-                <td>
-                    <a href="<?php echo $_SERVER['PHP_SELF'] . '?del=' . $row['sno'] . '&img_name=' .$row['img_name']; ?>" onclick="return confirm('Are you sure?');" style="color:#f00" alt="Delete">
-                        <span class="far fa-trash-alt" aria-hidden="true" data-toggle="tooltip" title="Delete"></span>
-                    </a>
-                </td>
-            </tr>
-            <?php 
-                }
-            }
-            ?>
-        </table>    
-    </div>
-</div>
+<div id="container">	
+		<div class="card card-body">    
+        	
+				<form action="<?php echo $_SERVER['PHP_SELF'];?>" class="wufoo leftLabel page1" name="" enctype="multipart/form-data" method="POST" onSubmit="" >
+					<?php echo $msg.'</br>' ?>
 
-<!-- Include Fancybox JS -->
-<script src="images/gallery/jquery-3.6.4.min.js"></script>
-<script src="images/gallery/jquery.fancybox.min.js"></script>
+					<div class="bg-warning text-white p-2 my-2 w-100 " style="border-radius:5px;">
+                        <h3>Add Tenders/निविदाएं</h3>
+                    </div>
+					
+					
+						
+                    <div class="row mx-1">
+						<div class="col-md-4">Upload File / अपलोड फाइल  <br> <input type="file" class="form-control" name="u_file"  id="u_file" required ?> 
+								<?php 
+									if(isset($_GET['edit'])){
+										
+										?>
+										<a href="<?php echo $data['img_name'];?>" target="_blank" class="d-block text-right">Uploaded File</a>
+										<input type="hidden" name="old_file" value="<?php echo $data['img_name'];?>">
+										<input type="hidden" name="editsno" value="<?php echo $data['sno'];?>">
 
+										<?php
+									}
+								
+                            ?>
+                        </div>
+                        <div class="col-md-4">Remark   <br> 
+                            <input type="text" class="form-control" name="remark" id="description" value="<?php echo isset($_GET['edit'])?$data['remark']:'';?>" >
+                        </div>
+                        
+                        
+                        <div class="col-md-4 " >
+                            <input type="submit" class="btn btn-warning mt-2 " name="submit" id="submit" value="submit">
+                        </div>
+                    </div>
+						
+					
+					
+				</form>	
+			
+		</div>
+	
+		<div class="card card-body">
+			<table  class="table table-striped table-hover table-sm rounded ">
+				<tr class="bg-warning text-white ">
+					<th>S.No.</th>
+					<th>Remark</th>
+					<th>File </th>
+                    <th>View</th>
+					<th>Edit</th>
+					<th>Delete</th>
+				</tr>
+				<?php
+					$serial_no = 1;
+					$sql = 'select * from add_photos order by sno desc';
+					$res = execute_query( $sql);
+					if($res){
+						while($row = mysqli_fetch_assoc($res)){
+
+				?>
+				<tr>
+					<td><?php echo $serial_no++; ?></td>
+					<td><?php echo $row['remark']==""?"-------------":$row['remark'] ?></td>
+                    <td><img src="<?php echo $row['img_name'] ?>" alt="Gallery Image" width="" heigth="100" style="width:100px;"></td>
+					<td><a href="<?php echo $row['img_name'] ?>" target="_blank">View</a></td>
+					
+					<td>
+                        <a href="<?php echo $_SERVER['PHP_SELF'] . '?edit=' . $row['sno']; ?>" alt="Edit" data-toggle="tooltip" title="Edit"><span class="far fa-edit" aria-hidden="true"></span></a>&nbsp;&nbsp;&nbsp;
+					</td>
+					<td>
+						<a href="<?php echo $_SERVER['PHP_SELF'] . '?del=' . $row['sno'] . '&img_name=' .$row['img_name']; ?>" onclick="return confirm('Are you sure?');" style="color:#f00" alt="Delete">
+							<span class="far fa-trash-alt" aria-hidden="true" data-toggle="tooltip" title="Delete"></span>
+						</a>
+					</td>
+				</tr>
+				
+				<?php 
+					}
+						
+				}
+				
+				?>
+			</table>	
+		</div>
+	</div>	
+	
+	
+	
+	
 <?php 
 page_footer_start(); 
 page_footer_end(); 
+
 ?>

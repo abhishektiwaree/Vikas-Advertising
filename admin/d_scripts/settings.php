@@ -4,7 +4,7 @@
 $time_track = array();
 $time_track[] = microtime(true);
 set_time_limit(0);
-error_reporting(E_ALL);
+//error_reporting(E_ALL);
 
 //error_reporting(0);
 /*if($_SERVER["HTTPS"] != "on")
@@ -45,7 +45,7 @@ function dbconnect(){
 	return $db;
 }
 
-function page_header_start($title='Little Friends School') {
+function page_header_start($title='UPRNSS Web') {
 	global $software_type;
 	global $time_track;
 	$time_track[] = microtime(true);
@@ -369,7 +369,7 @@ function page_sidebar($id=''){
 			<div class="sidebar-wrapper">
 				<div class="logo">
 					<a href="#" class="simple-text logo-mini"><span class="nc-icon nc-send"></span></a>
-					<a href="index.php" class="simple-text  logo-normal">LFS  Website</a>
+					<a href="index.php" class="simple-text  logo-normal">UPRNSS Website</a>
 				</div>
 
 				<ul class="nav">

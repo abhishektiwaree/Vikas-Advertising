@@ -4,111 +4,100 @@ include("d_scripts/settings.php");
 $response=1;
 $msg='';
 
-?>
-<?php 
+$allowedExtensions = ['jpg', 'jpeg', 'png'];
+$maxFileSize = 5 * 1024 * 1024; // 5MB
 
-$allowedExtensions = ['jpg', 'jpeg', 'png', 'mp4'];
+if (isset($_POST['submit']) && !empty($_POST['submit'])) {
+    $msg = '';
 
-if(isset($_POST['submit']) && $_POST['submit'] != ''){
+    // Function to validate uploaded file
+    function validateFile($file, $allowedExtensions, $maxFileSize)
+    {
+        $errors = [];
+        if ($file['size'] > $maxFileSize) {
+            $errors[] = "File is too large. Maximum file size allowed is 5MB.";
+        }
 
-	if(isset($_POST['editsno']) && $_POST['editsno']!= ''){
-		$oldimgname= $_POST['old_file'];
-		// old_file
-		// echo "hello update";
-		if($_FILES['u_file']['name']!=""){
-			$newerrors = [];
-			
-			$newfileName=$_FILES["u_file"]["name"];
-			$newfileTmpName=$_FILES["u_file"]["tmp_name"];
-			$newfileSize=$_FILES["u_file"]['size'];
+        $fileExtension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        if (!in_array($fileExtension, $allowedExtensions)) {
+            $errors[] = "Only JPG, JPEG, PNG files are allowed.";
+        }
 
-			if ($newfileSize > 5 * 1024 * 1024) {
-				$newerrors[] = "File is too large. Maximum file size allowed is 5MB.";
-			}
-		
-			// Allowed file extensions
-			
-			$newfileExtension = strtolower(pathinfo($newfileName, PATHINFO_EXTENSION));
-		
-			// Check if the file extension is allowed
-			if (!in_array($newfileExtension, $allowedExtensions)) {
-				$newerrors[] = "Only JPG, JPEG, PNG, MP4 files are allowed.";
-			}
-			
-			if (empty($newerrors)) {
-				if(move_uploaded_file($newfileTmpName,$oldimgname)){
-					$msg .='<p class="alert alert-success">File Upload  Successfully </p>';   
-				 }else{
-					$msg .= '<h6 class="alert alert-danger">could not replace the pdf</h6>';			
-				 }
-			}
-	
-		}
-		
-		$sql="UPDATE `add_hero` SET `remark`='".$_POST['remark']."' WHERE sno ='".$_POST['editsno']."'";
-		
-		
-		execute_query( $sql);
-		if(mysqli_errno($db)){
-			$msg .= '<h6 class="alert alert-danger">Updation Failed</h6>' ;
-		}
-		else{
-			$msg .= '<h6 class="alert alert-success">Data Updated</h6>' ;
-			$_GET['name']  = '';
-		}
-		
-	}
-	else{
-		$errors = [];
-		$fileName=$_FILES["u_file"]["name"];
-		$fileTmpName=$_FILES["u_file"]["tmp_name"];
-		$fileSize=$_FILES["u_file"]['size'];
-		$newFileName=$fileName;
-		
-		if ($_FILES["u_file"]["size"] > 5 * 1024 * 1024) {
-			$errors[] = "File is too large. Maximum file size allowed is 5MB.";
-		}
-	
-		// Allowed file extensions
-		
-		$fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-	
-		// Check if the file extension is allowed
-		if (!in_array($fileExtension, $allowedExtensions)) {
-			$errors[] = "Only JPG, JPEG, PNG, MP4 files are allowed.";
-		}
-		
-		if (empty($errors)) {
-			
-		
+        return $errors;
+    }
 
-			$sql = "INSERT INTO add_hero(remark, img_name) VALUES ('".$_POST['remark']."','$newFileName')";
+    // Function to handle file upload
+    function uploadFile($fileTmpName, $destination)
+    {
+        return move_uploaded_file($fileTmpName, $destination);
+    }
 
-			// $sql = "INSERT INTO add_hero(descr, starting_date, ending_date, prakhand, img_name, isactive) VALUES ('".$_POST['desc']."','".$_POST['st-date']."','".$_POST['en-date']."','".$_POST['prakhand']."','$newFileName','1')";
-			
-			$res=mysqli_query($db,$sql);
-			
-			$getsno=mysqli_insert_id($db);
-		
+    if (!empty($_POST['editsno'])) {
+        // Update existing record
+        $editsno = $_POST['editsno'];
+        $oldImgName = $_POST['old_file'];
+        $remark = $_POST['remark'];
 
-			$uploadPath="master_images/hero_img/".$getsno.".".$fileExtension;
-            // echo $uploadPath;
-			if(mysqli_errno($db)){
-				$msg .= '<h6 class="alert  alert-danger">Insertion Failed.</h6>' ;
-			}
-			else{
-				$msg .= '<h6 class="alert  alert-success">Data Inserted.</h6>' ;
-				if(move_uploaded_file($fileTmpName,$uploadPath)){
-					execute_query("UPDATE add_hero SET img_name = '$uploadPath',order_img='$getsno' where sno='$getsno'");
-					$msg .='<p class="alert alert-success">File Upload  Successfully </p>';   
-                    
-				 }
-				 
-			}
-		}
+        if (!empty($_FILES['u_file']['name'])) {
+            $file = $_FILES['u_file'];
+            $fileErrors = validateFile($file, $allowedExtensions, $maxFileSize);
 
+            if (empty($fileErrors)) {
+                if (uploadFile($file['tmp_name'], $oldImgName)) {
+                    $msg .= '<p class="alert alert-success">File uploaded successfully.</p>';
+                } else {
+                    $msg .= '<h6 class="alert alert-danger">Could not replace the file.</h6>';
+                }
+            } else {
+                foreach ($fileErrors as $error) {
+                    $msg .= '<h6 class="alert alert-danger">' . $error . '</h6>';
+                }
+            }
+        }
 
-	}
+        $sql = "UPDATE `add_hero` SET `remark` = ? WHERE `sno` = ?";
+        $stmt = $db->prepare($sql);
+        $stmt->bind_param('si', $remark, $editsno);
+        if ($stmt->execute()) {
+            $msg .= '<h6 class="alert alert-success">Data updated successfully.</h6>';
+        } else {
+            $msg .= '<h6 class="alert alert-danger">Updation failed.</h6>';
+        }
+    } else {
+        // Insert new record
+        $remark = $_POST['remark'];
+        $file = $_FILES['u_file'];
+
+        $fileErrors = validateFile($file, $allowedExtensions, $maxFileSize);
+        if (empty($fileErrors)) {
+            $fileExtension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+            $sql = "INSERT INTO `add_hero` (`remark`, `img_name`) VALUES (?, '')";
+            $stmt = $db->prepare($sql);
+            $stmt->bind_param('s', $remark);
+
+            if ($stmt->execute()) {
+                $getsno = $stmt->insert_id;
+                $uploadPath = "master_images/hero_img/" . $getsno . "." . $fileExtension;
+
+                if (uploadFile($file['tmp_name'], $uploadPath)) {
+                    $updateSql = "UPDATE `add_hero` SET `img_name` = ?, `order_img` = ? WHERE `sno` = ?";
+                    $updateStmt = $db->prepare($updateSql);
+                    $updateStmt->bind_param('sii', $uploadPath, $getsno, $getsno);
+                    $updateStmt->execute();
+
+                    $msg .= '<p class="alert alert-success">File uploaded successfully.</p>';
+                }
+                $msg .= '<h6 class="alert alert-success">Data inserted successfully.</h6>';
+            } else {
+                $msg .= '<h6 class="alert alert-danger">Insertion failed.</h6>';
+            }
+        } else {
+            foreach ($fileErrors as $error) {
+                $msg .= '<h6 class="alert alert-danger">' . $error . '</h6>';
+            }
+        }
+    }
+    //echo $msg;
 }
 
 if (isset($_GET['edit'])) {

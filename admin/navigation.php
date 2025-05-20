@@ -8,6 +8,8 @@ page_header_start();
 page_header_end();
 page_sidebar();
 
+
+
 	if(isset($_POST['submit'])){
 		if($_POST['edit_sno']==''){
 		$sql = 'insert into navigation (
@@ -200,7 +202,6 @@ if(isset($_GET['del'])){
 							<td>'.$row['sub_parent'].'</td>
 							<td>'.$row['sort_no'].'</td>
 							<td><a href="'.$_SERVER['PHP_SELF'].'?edit_sno='.$row['sno'].'" onClick="return confirm(\'Are you sure?\');" alt="Edit Details" data-toggle="tooltip" title="Edit Details"><span class="far fa-edit" aria-hidden="true"></span></a></td>
-
 							<td><a href="'.$_SERVER['PHP_SELF'].'?del='.$row['sno'].'" onclick="return confirm(\'Are you sure?\');" style="color:#f00" alt="Delete Entry"><span class="far fa-trash-alt" aria-hidden="true" data-toggle="tooltip" title="Delete Entry"></span></a></td>
 							</tr>';
 						}
@@ -212,6 +213,9 @@ if(isset($_GET['del'])){
             </div>
 		</div>	
 
+					
+				
+				
 <?php
 page_footer_start();
 ?>

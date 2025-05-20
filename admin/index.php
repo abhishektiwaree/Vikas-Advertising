@@ -106,10 +106,10 @@ if(!isset($_SESSION['session_id'])) {
             <div class="content">
                 <div class="container">
                     <div class="col-md-4 col-sm-6 ml-auto mr-auto login-page">
-                        <form id="loginform" name="login" class="wufoo page" autoc omplete="off" enctype="multipart/form-data" method="post" action="index.php">
+                        <form id="loginform" name="login" class="wufoo page" autocomplete="off" enctype="multipart/form-data" method="post" action="index.php">
                             <div class="card card-login">
                                 <div class="card-header card-header-red text-center bg-warning text-white">
-                                   	<h2 class="header text-center" style="font-size: 1.6rem">Little Friends School</h2>
+                                   	<h2 class="header text-center" style="font-size: 1.6rem">UPRNSS Website</h2>
                                     <h6 class="header text-center">Login</h3>
                                     <?php echo $msg; ?>
                                 </div>
@@ -173,7 +173,7 @@ else {
                         <form id="loginform" name="login" class="wufoo page" autocomplete="off" enctype="multipart/form-data" method="post" action="index.php">
                             <div class="card card-login">
                                 <div class="card-header card-header-red text-center ">
-                                   	<h2 class="header text-center">Little Friends School DASHBOARD(<span class="pe-7s-study"></span>)</h2>
+                                   	<h2 class="header text-center">UPRNSS DASHBOARD(<span class="pe-7s-study"></span>)</h2>
                                     <h3 class="header text-center">Login</h3>
                                     <?php echo $msg; ?>
                                 </div>

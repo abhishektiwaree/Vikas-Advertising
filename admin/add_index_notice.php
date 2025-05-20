@@ -1,65 +1,62 @@
-<?php
+<?php 
 include("d_scripts/settings.php");
 
-$response = 1;
-$msg = '';
+$response=1;
+$msg='';
 page_header_start();
 page_header_end();
 page_sidebar();
 ?>
-<?php
+<?php 
 
-if (isset($_POST['submit']) && $_POST['submit'] != '') {
-    if (isset($_POST['editsno']) && $_POST['editsno'] != '') {
-        $sql = "UPDATE `add_index_notice` SET `notice`=? WHERE sno=?";
-        $stmt = mysqli_prepare($db, $sql);
-        mysqli_stmt_bind_param($stmt, "si", $_POST['notice'], $_POST['editsno']);
-        mysqli_stmt_execute($stmt);
 
-        if (mysqli_errno($db)) {
-            $msg .= '<h6 class="alert alert-danger">Updation Failed</h6>';
-        } else {
-            $msg .= '<h6 class="alert alert-success">Data Updated</h6>';
-            $_GET['name'] = '';
-        }
-    } else {
-        $sql = "INSERT INTO add_index_notice(notice) VALUES (?)";
-        $stmt = mysqli_prepare($db, $sql);
-        mysqli_stmt_bind_param($stmt, "s", $_POST['notice']);
-        mysqli_stmt_execute($stmt);
+if(isset($_POST['submit']) && $_POST['submit'] != ''){
 
-        if (mysqli_errno($db)) {
-            $msg .= '<h6 class="alert  alert-alert">Insertion Failed.</h6>';
-        } else {
-            $msg .= '<h6 class="alert  alert-success">Data Inserted.</h6>';
-        }
-    }
+	if(isset($_POST['editsno']) && $_POST['editsno']!= ''){
+		
+		$sql="UPDATE `add_index_notice` SET `notice`='".$_POST['notice']."' WHERE sno ='".$_POST['editsno']."'";
+		execute_query( $sql);
+		if(mysqli_errno($db)){
+			$msg .= '<h6 class="alert alert-danger">Updation Failed</h6>' ;
+		}
+		else{
+			$msg .= '<h6 class="alert alert-success">Data Updated</h6>' ;
+			$_GET['name']  = '';
+		}
+		
+	}
+	else{
+			$sql = "INSERT INTO add_index_notice(notice) VALUES ('".$_POST['notice']."')";
+			$res=mysqli_query($db,$sql);
+			if(mysqli_errno($db)){
+				$msg .= '<h6 class="alert  alert-alert">Insertion Failed.</h6>' ;
+			}
+			else{
+				$msg .= '<h6 class="alert  alert-success">Data Inserted.</h6>' ;
+			}
+	}
 }
 
 if (isset($_GET['edit'])) {
-    $sql = 'SELECT * FROM add_index_notice WHERE sno=?';
-    $stmt = mysqli_prepare($db, $sql);
-    mysqli_stmt_bind_param($stmt, "i", $_GET['edit']);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-    $data = mysqli_fetch_assoc($result);
+	$sql = 'select * from add_index_notice where sno=' . $_GET['edit'];
+	$data = mysqli_fetch_assoc(execute_query($sql));
 }
 
-if (isset($_GET['del']) && $_GET['del'] != '') {
-    $sql = 'DELETE FROM add_index_notice WHERE sno=?';
-    $stmt = mysqli_prepare($db, $sql);
-    mysqli_stmt_bind_param($stmt, "i", $_GET['del']);
-    mysqli_stmt_execute($stmt);
-
-    if (mysqli_errno($db)) {
-        $msg .= '<h6 class="alert alert-danger">Deletion Failed.</h6>';
-    } else {
-        $msg .= '<h6 class="alert alert-danger">Data deleted.</h6>';
-    }
+if (isset($_GET['del']) && $_GET['del']!='') {
+		// Perform the file deletion
+		$sql = 'delete from add_index_notice where sno=' . $_GET['del'];
+		$data = execute_query( $sql);
+		if(mysqli_errno($db)){
+			$msg .= '<h6 class="alert alert-danger">Deletion Failed.</h6>';
+		}
+		else{
+			$msg .= '<h6 class="alert alert-danger">Data deleted.</h6>';			
+		}
 }
+
+
 
 ?>
-<!-- rest of your code -->
 
 
 <style>

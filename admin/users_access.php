@@ -19,7 +19,6 @@ if(isset($_POST['submit'])){
 	if(mysqli_error($db)){ 
 		$msg .= '<p class="text text-danger">Error # 1 : '.mysqli_error($db).'>> '.$sql.'</p>';
 	}
-	
 	else{
 		if($_POST['edit_sno']==''){
 			$id = mysqli_insert_id($db);
@@ -49,7 +48,6 @@ if(isset($_POST['submit'])){
 		}
 	}
 }
-
 else{
 	if(!isset($_POST['search'])){
 		$_POST['edit_sno'] = '';

@@ -1,12 +1,6 @@
-
 <?php
 	date_default_timezone_set("Asia/Kolkata");
-	// $db = mysqli_connect("p:localhost", "uprnssorg", "JJ4I45[wV)6e", "uprnssor_main");
-//	$db = mysqli_connect("p:localhost", "incolvinisc", "I9c3L3i9@741#", "incolvin_main");
-	// $db = mysqli_connect("p:localhost", "incolvinisc", "Info@13579", "incolvin_main");
-	// $db = mysqli_connect("p:localhost", "littlefr", "Luck@123", "littlefr_db");
-	// $db = mysqli_connect("p:localhost", "root", "mysql", "littlefr_db");
-	$db = mysqli_connect("p:localhost", "root", "mysql", "lfs");
+	$db = mysqli_connect("p:localhost", "root", "mysql", "vikas_adv");
 	if(!$db){
 		die("Error 1 : Contact Administrator.");
 	}
@@ -31,5 +25,6 @@ function insert_id($db=''){
 	global $db;
 	return mysqli_insert_id($db);
 }
+
 
 ?>
